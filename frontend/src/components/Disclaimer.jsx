@@ -1,0 +1,1 @@
+export default function Disclaimer(){return <div className="disclaimer">This application is an educational payment simulator. QR codes generated here are mock representations and do not initiate real UPI payments. Actual UPI/payment-network fees and transaction rules vary by provider, merchant category and applicable regulations.</div>}

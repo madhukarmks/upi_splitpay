@@ -1,0 +1,9 @@
+package com.madhukar.upisplitter.service;
+import com.madhukar.upisplitter.dto.AuthDtos.*; import com.madhukar.upisplitter.exception.ApiException; import com.madhukar.upisplitter.model.User; import com.madhukar.upisplitter.repository.UserRepository; import com.madhukar.upisplitter.security.JwtService; import org.springframework.http.HttpStatus; import org.springframework.security.crypto.password.PasswordEncoder; import org.springframework.stereotype.Service; import java.time.Instant;
+@Service public class AuthService {
+ private final UserRepository users; private final PasswordEncoder encoder; private final JwtService jwt;
+ public AuthService(UserRepository users,PasswordEncoder encoder,JwtService jwt){this.users=users;this.encoder=encoder;this.jwt=jwt;}
+ public AuthResponse register(RegisterRequest r){if(!r.password().equals(r.confirmPassword()))throw new ApiException(HttpStatus.BAD_REQUEST,"Passwords do not match");if(users.findByEmailIgnoreCase(r.email()).isPresent())throw new ApiException(HttpStatus.CONFLICT,"Email is already registered");Instant now=Instant.now();User u=User.builder().name(r.name().trim()).email(r.email().trim().toLowerCase()).passwordHash(encoder.encode(r.password())).role(User.Role.USER).createdAt(now).updatedAt(now).build();users.save(u);return login(new LoginRequest(r.email(),r.password()));}
+ public AuthResponse login(LoginRequest r){User u=users.findByEmailIgnoreCase(r.email()).orElseThrow(()->new ApiException(HttpStatus.UNAUTHORIZED,"Invalid email or password"));if(!encoder.matches(r.password(),u.getPasswordHash()))throw new ApiException(HttpStatus.UNAUTHORIZED,"Invalid email or password");return new AuthResponse(jwt.generate(u.getId(),u.getEmail(),u.getRole().name()),u.getId(),u.getName(),u.getEmail(),u.getRole().name());}
+ public User byId(String id){return users.findById(id).orElseThrow(()->new ApiException(HttpStatus.NOT_FOUND,"User not found"));}
+}

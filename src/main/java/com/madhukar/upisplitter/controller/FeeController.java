@@ -1,0 +1,3 @@
+package com.madhukar.upisplitter.controller;
+import com.madhukar.upisplitter.dto.*;import jakarta.validation.constraints.*;import org.springframework.web.bind.annotation.*;import java.math.*;
+@RestController @RequestMapping("/api/fees") public class FeeController {@GetMapping("/simulate") public ApiDtos.ApiResponse<ApiDtos.FeeResponse> simulate(@RequestParam @DecimalMin("0.01") BigDecimal amount,@RequestParam @DecimalMin("0") @DecimalMax("100") BigDecimal rate){BigDecimal fee=amount.multiply(rate).divide(BigDecimal.valueOf(100),2,RoundingMode.HALF_UP);return ApiResponseFactory.ok("Illustrative fee simulation",new ApiDtos.FeeResponse(amount,rate,fee,amount.subtract(fee)));}}

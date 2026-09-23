@@ -1,0 +1,3 @@
+package com.madhukar.upisplitter.service;
+import com.madhukar.upisplitter.model.AuditLog; import com.madhukar.upisplitter.repository.AuditLogRepository; import org.springframework.stereotype.Service; import java.time.Instant; import java.util.Map;
+@Service public class AuditService { private final AuditLogRepository repo; public AuditService(AuditLogRepository repo){this.repo=repo;} public void log(String userId,String action,String type,String entityId,Map<String,Object> metadata){repo.save(AuditLog.builder().userId(userId).action(action).entityType(type).entityId(entityId).timestamp(Instant.now()).metadata(metadata).build());} }
