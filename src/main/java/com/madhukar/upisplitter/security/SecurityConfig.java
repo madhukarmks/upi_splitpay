@@ -1,13 +1,16 @@
 package com.madhukar.upisplitter.security;
 
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.*;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -28,21 +31,29 @@ public class SecurityConfig {
         return http
                 .csrf(c -> c.disable())
 
-                .cors(c -> c.configurationSource(corsConfigurationSource()))
+                .cors(c -> c.configurationSource(cors()))
 
                 .sessionManagement(s ->
                         s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 .authorizeHttpRequests(a -> a
+
+                        // Public endpoints
                         .requestMatchers(
+                                "/",
+                                "/error",
                                 "/api/auth/**",
-                                "/api/public/**",
-                                "/auth/**",
-                                "/error"
+                                "/api/public/**"
                         ).permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+
+                        // Admin
+                        .requestMatchers("/api/admin/**")
+                        .hasRole("ADMIN")
+
+                        // Everything else
+                        .anyRequest()
+                        .authenticated()
                 )
 
                 .addFilterBefore(
@@ -54,14 +65,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource cors() {
 
         CorsConfiguration c = new CorsConfiguration();
 
         c.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:3000",
-                "https://master.d3r1ntufn0voar.amplifyapp.com"
+                "https://master.d3r1ntufn0v0ar.amplifyapp.com"
         ));
 
         c.setAllowedMethods(List.of(
