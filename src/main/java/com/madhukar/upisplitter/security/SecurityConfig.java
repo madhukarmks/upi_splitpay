@@ -72,6 +72,7 @@ public class SecurityConfig {
         c.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:3000",
+            "https://upi_splitpay.versal.app",
                 "https://master.d3r1ntufn0v0ar.amplifyapp.com"
         ));
 
