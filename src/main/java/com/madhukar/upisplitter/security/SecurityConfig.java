@@ -52,7 +52,7 @@ public class SecurityConfig {
 
                         // Public authentication and public APIs
                         .requestMatchers(
-                                "/auth/**",
+                                "/api/auth/**",
                                 "/api/public/**",
                                 "/error"
                         ).permitAll()
